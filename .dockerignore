@@ -1,0 +1,11 @@
+.git
+venv
+.venv
+__pycache__
+*.pyc
+*.sqlite3
+*.db
+staticfiles
+media
+.env
+admin login.txt

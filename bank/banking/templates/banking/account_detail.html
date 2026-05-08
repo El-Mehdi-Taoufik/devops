@@ -1,0 +1,171 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Détails du compte</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{% static 'banking/css/style.css' %}" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+<div class="container page-shell">
+
+    <a href="/" class="btn btn-outline-secondary mb-4">⬅ Retour au dashboard</a>
+
+    <section class="page-header">
+        <div>
+            <div class="eyebrow">Détails du compte</div>
+            <h1 class="hero-title">{{ account.account_number }}</h1>
+            <p class="hero-subtitle mb-0">Gérez les transactions et analysez les mouvements de ce compte.</p>
+        </div>
+    </section>
+
+    <section class="row mb-4">
+        <div class="col-md-4 mb-3">
+            <div class="card stat-card h-100">
+                <div class="card-body">
+                    <span class="stat-icon mb-3">💳</span>
+                    <h6 class="text-muted">Solde actuel</h6>
+                    <h3 class="fw-bold mb-0">{{ account.balance }} MAD</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card stat-card h-100">
+                <div class="card-body">
+                    <span class="stat-icon mb-3">📈</span>
+                    <h6 class="text-muted">Total crédits</h6>
+                    <h3 class="fw-bold text-success mb-0">{{ credit_total }} MAD</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card stat-card h-100">
+                <div class="card-body">
+                    <span class="stat-icon mb-3">📉</span>
+                    <h6 class="text-muted">Total débits</h6>
+                    <h3 class="fw-bold text-danger mb-0">{{ debit_total }} MAD</h3>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <form method="get" class="mb-4 d-flex gap-2 filter-form">
+        <select name="type" class="form-select w-25">
+            <option value="">Toutes les transactions</option>
+            <option value="CREDIT" {% if selected_type == "CREDIT" %}selected{% endif %}>Crédit</option>
+            <option value="DEBIT" {% if selected_type == "DEBIT" %}selected{% endif %}>Débit</option>
+        </select>
+        <button class="btn btn-primary">Filtrer</button>
+        <a href="{% url 'account_detail' account.id %}" class="btn btn-outline-secondary">Réinitialiser</a>
+    </form>
+
+    <div class="card chart-card mb-4">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold mb-0">📊 Statistiques</h5>
+                <span class="badge badge-soft-success px-3 py-2">{{ transaction_count }} transaction(s)</span>
+            </div>
+            <canvas id="statsChart" height="100"></canvas>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header bg-transparent fw-bold">
+            ➕ Nouvelle transaction
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label class="form-label">Type de transaction</label>
+                    {{ form.transaction_type }}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Montant (MAD)</label>
+                    {{ form.amount }}
+                </div>
+
+                <button type="submit" class="btn btn-success px-4">
+                    ✔ Valider
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header bg-transparent fw-bold">
+            📜 Historique des transactions
+        </div>
+        <ul class="list-group list-group-flush">
+            {% for t in transactions %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span class="d-flex align-items-center gap-3">
+                        <span class="transaction-dot {% if t.transaction_type == 'DEBIT' %}transaction-debit{% else %}transaction-credit{% endif %}"></span>
+                        <span>
+                            <strong>{% if t.transaction_type == 'DEBIT' %}Débit{% else %}Crédit{% endif %}</strong>
+                            <small class="d-block text-muted">{{ t.date|date:"d M Y H:i" }}</small>
+                        </span>
+                    </span>
+                    <strong class="{% if t.transaction_type == 'DEBIT' %}text-danger{% else %}text-success{% endif %}">
+                        {% if t.transaction_type == 'DEBIT' %}-{% else %}+{% endif %}{{ t.amount }} MAD
+                    </strong>
+                </li>
+            {% empty %}
+                <li class="list-group-item text-muted">
+                    Aucune transaction.
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <a href="{% url 'export_pdf' account.id %}" class="btn btn-outline-dark">
+        📄 Export PDF
+    </a>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const creditTotal = Number("{{ credit_total|default:'0' }}");
+    const debitTotal  = Number("{{ debit_total|default:'0' }}");
+
+    const ctx = document.getElementById('statsChart').getContext('2d');
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Crédit', 'Débit'],
+            datasets: [{
+                label: 'Montant (MAD)',
+                data: [creditTotal, debitTotal],
+                backgroundColor: ['#198754', '#dc3545']
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: true
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+
+
+
+</body>
+</html>

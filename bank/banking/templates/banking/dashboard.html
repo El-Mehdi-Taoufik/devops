@@ -1,0 +1,167 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dashboard | BankApp</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{% static 'banking/css/style.css' %}" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bank-navbar fixed-top shadow-sm">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="/">🏦 BankApp</a>
+        <div class="ms-auto d-flex gap-2">
+            <a href="{% url 'transfer_money' %}" class="btn btn-outline-light btn-sm">Transfert</a>
+            {% if user.is_superuser %}
+                <a href="{% url 'admin_dashboard' %}" class="btn btn-outline-light btn-sm">Admin</a>
+                <a href="{% url 'add_account' %}" class="btn btn-success btn-sm">Ajouter un compte</a>
+            {% endif %}
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline-light btn-sm">Logout</button>
+            </form>
+        </div>
+    </div>
+</nav>
+
+<main class="container page-shell">
+    <section class="page-header">
+        <div>
+            <div class="eyebrow">Espace bancaire</div>
+            <h1 class="hero-title">Tableau de bord</h1>
+            <p class="hero-subtitle mb-0">Suivez les comptes, les soldes et les actions importantes depuis une interface claire et moderne.</p>
+        </div>
+    </section>
+
+    <section class="row mb-4">
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="card stat-card border-0 h-100">
+                <div class="card-body">
+                    <span class="stat-icon mb-3">🔢</span>
+                    <h6 class="text-muted">Total des comptes</h6>
+                    <h3 class="fw-bold mb-0">{{ total_accounts }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="card stat-card border-0 h-100">
+                <div class="card-body">
+                    <span class="stat-icon mb-3">💰</span>
+                    <h6 class="text-muted">Solde total</h6>
+                    <h3 class="fw-bold mb-0">{{ total_balance }} MAD</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="card stat-card border-0 h-100">
+                <div class="card-body">
+                    <span class="stat-icon mb-3">👥</span>
+                    <h6 class="text-muted">Clients</h6>
+                    <h3 class="fw-bold mb-0">{{ total_clients }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="card stat-card border-0 h-100">
+                <div class="card-body">
+                    <span class="stat-icon mb-3">⚡</span>
+                    <h6 class="text-muted">Transactions</h6>
+                    <h3 class="fw-bold mb-0">{{ total_transactions }}</h3>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <form method="get" class="card filter-panel mb-4">
+        <div class="card-body">
+            <div class="row g-3 align-items-end">
+                <div class="col-lg-6">
+                    <label class="form-label fw-bold">Recherche intelligente</label>
+                    <input type="search" name="q" value="{{ search_query }}" class="form-control" placeholder="Compte, client ou téléphone">
+                </div>
+                <div class="col-lg-3">
+                    <label class="form-label fw-bold">Solde</label>
+                    <select name="balance" class="form-select">
+                        <option value="">Tous les soldes</option>
+                        <option value="positive" {% if balance_filter == "positive" %}selected{% endif %}>Solde positif</option>
+                        <option value="negative" {% if balance_filter == "negative" %}selected{% endif %}>Solde négatif</option>
+                    </select>
+                </div>
+                <div class="col-lg-3 d-flex gap-2">
+                    <button class="btn btn-primary flex-fill">Rechercher</button>
+                    <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary flex-fill">Reset</a>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <section class="row g-4">
+        <div class="col-lg-8">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <h4 class="section-title mb-0">Comptes bancaires</h4>
+                {% if user.is_superuser %}
+                    <a href="{% url 'add_client' %}" class="btn btn-outline-primary btn-sm">Nouveau client</a>
+                {% endif %}
+            </div>
+            <div class="row">
+                {% for account in accounts %}
+                <div class="col-md-6 mb-4">
+                    <div class="card account-card border-0 h-100">
+                        <div class="card-body d-flex flex-column">
+                            <div class="d-flex align-items-center gap-3 mb-3">
+                                <span class="account-icon">💳</span>
+                                <div>
+                                    <div class="text-muted small">Compte</div>
+                                    <h5 class="mb-0 fw-bold">{{ account.account_number }}</h5>
+                                    <small class="text-muted">{{ account.client.user.username }}</small>
+                                </div>
+                            </div>
+                            <p class="mb-4">
+                                <span class="text-muted">Solde</span>
+                                <span class="badge rounded-pill px-3 py-2 {% if account.balance < 0 %}badge-soft-danger{% else %}badge-soft-success{% endif %}">
+                                    {{ account.balance }} MAD
+                                </span>
+                            </p>
+                            <a href="{% url 'account_detail' account.id %}" class="btn btn-primary w-100 mt-auto mb-3">Voir détails</a>
+                            {% if user.is_superuser %}
+                            <div class="d-flex gap-2">
+                                <a href="{% url 'edit_account' account.id %}" class="btn btn-outline-warning w-50">Modifier</a>
+                                <a href="{% url 'delete_account' account.id %}" class="btn btn-outline-danger w-50">Supprimer</a>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12">
+                    <div class="alert alert-info text-center bank-card">Aucun compte trouvé.</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card h-100">
+                <div class="card-header bg-transparent fw-bold">Activité récente</div>
+                <ul class="list-group list-group-flush">
+                    {% for transaction in recent_transactions %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>
+                            <strong>{{ transaction.account.account_number }}</strong>
+                            <small class="d-block text-muted">{{ transaction.date|date:"d M Y H:i" }}</small>
+                        </span>
+                        <span class="{% if transaction.transaction_type == 'DEBIT' %}text-danger{% else %}text-success{% endif %} fw-bold">
+                            {% if transaction.transaction_type == 'DEBIT' %}-{% else %}+{% endif %}{{ transaction.amount }} MAD
+                        </span>
+                    </li>
+                    {% empty %}
+                    <li class="list-group-item text-muted">Aucune transaction récente.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </section>
+</main>
+</body>
+</html>

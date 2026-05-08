@@ -1,0 +1,17 @@
+services:
+  web:
+    build: .
+    container_name: devops-django-bank
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      SECRET_KEY: ${SECRET_KEY:-change-me}
+      DEBUG: ${DEBUG:-True}
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS:-localhost,127.0.0.1,0.0.0.0}
+      SQLITE_PATH: /app/bank/data/db.sqlite3
+    volumes:
+      - sqlite-data:/app/bank/data
+
+volumes:
+  sqlite-data:

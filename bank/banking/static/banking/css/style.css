@@ -1,0 +1,305 @@
+:root {
+    --bg: #eef4ff;
+    --surface: rgba(255, 255, 255, 0.86);
+    --surface-solid: #ffffff;
+    --text: #172033;
+    --muted: #6b7890;
+    --primary: #2457ff;
+    --primary-dark: #173ec4;
+    --success: #14b87a;
+    --danger: #ef476f;
+    --warning: #f7b731;
+    --dark: #101828;
+    --border: rgba(36, 87, 255, 0.12);
+    --shadow: 0 22px 60px rgba(23, 32, 51, 0.12);
+    --radius: 24px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    color: var(--text);
+    background:
+        radial-gradient(circle at top left, rgba(36, 87, 255, 0.18), transparent 34rem),
+        radial-gradient(circle at top right, rgba(20, 184, 122, 0.16), transparent 28rem),
+        linear-gradient(180deg, #f8fbff 0%, var(--bg) 100%);
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+        linear-gradient(rgba(36, 87, 255, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(36, 87, 255, 0.04) 1px, transparent 1px);
+    background-size: 44px 44px;
+    mask-image: linear-gradient(to bottom, black, transparent 75%);
+}
+
+body.auth-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.navbar.bank-navbar {
+    background: rgba(16, 24, 40, 0.86) !important;
+    backdrop-filter: blur(18px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.navbar-brand {
+    letter-spacing: -0.03em;
+}
+
+.page-shell {
+    padding-top: 105px;
+    padding-bottom: 48px;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding: 1.4rem;
+    border: 1px solid var(--border);
+    border-radius: 28px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(237, 244, 255, 0.78));
+    box-shadow: 0 18px 50px rgba(23, 32, 51, 0.08);
+}
+
+.eyebrow {
+    color: var(--primary);
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+}
+
+.hero-title {
+    margin: 0;
+    font-size: clamp(2rem, 4vw, 3.3rem);
+    font-weight: 900;
+    letter-spacing: -0.06em;
+}
+
+.hero-subtitle {
+    color: var(--muted);
+    max-width: 650px;
+}
+
+.bank-card,
+.card {
+    border: 1px solid var(--border) !important;
+    border-radius: var(--radius) !important;
+    background: var(--surface) !important;
+    box-shadow: var(--shadow) !important;
+    overflow: hidden;
+}
+
+.section-title {
+    font-weight: 900;
+    letter-spacing: -0.04em;
+}
+
+.filter-panel {
+    position: relative;
+}
+
+.filter-panel::before {
+    content: "🔎";
+    position: absolute;
+    top: -18px;
+    right: 22px;
+    display: inline-flex;
+    width: 44px;
+    height: 44px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 16px;
+    background: linear-gradient(135deg, var(--primary), #36a3ff);
+    box-shadow: 0 14px 28px rgba(36, 87, 255, 0.22);
+}
+
+.stat-card {
+    position: relative;
+    min-height: 150px;
+}
+
+.stat-card::after {
+    content: "";
+    position: absolute;
+    width: 110px;
+    height: 110px;
+    right: -32px;
+    top: -32px;
+    border-radius: 999px;
+    background: rgba(36, 87, 255, 0.12);
+}
+
+.stat-icon,
+.account-icon {
+    display: inline-flex;
+    width: 46px;
+    height: 46px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 16px;
+    background: rgba(36, 87, 255, 0.1);
+}
+
+.account-card {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.account-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 28px 75px rgba(23, 32, 51, 0.18) !important;
+}
+
+.transaction-dot {
+    display: inline-flex;
+    width: 12px;
+    height: 12px;
+    border-radius: 999px;
+    box-shadow: 0 0 0 6px rgba(36, 87, 255, 0.08);
+}
+
+.transaction-credit {
+    background: var(--success);
+}
+
+.transaction-debit {
+    background: var(--danger);
+}
+
+.badge-soft-success {
+    color: #08724d;
+    background: rgba(20, 184, 122, 0.13);
+}
+
+.badge-soft-danger {
+    color: #b4234d;
+    background: rgba(239, 71, 111, 0.13);
+}
+
+.btn {
+    border-radius: 14px;
+    font-weight: 700;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+}
+
+.btn-primary,
+.btn-success {
+    border: 0;
+    background: linear-gradient(135deg, var(--primary), #36a3ff) !important;
+    box-shadow: 0 12px 24px rgba(36, 87, 255, 0.22);
+}
+
+.btn-primary:hover,
+.btn-success:hover {
+    background: linear-gradient(135deg, var(--primary-dark), var(--primary)) !important;
+}
+
+.btn-outline-light,
+.btn-outline-secondary,
+.btn-outline-dark,
+.btn-outline-warning,
+.btn-outline-danger {
+    background: rgba(255, 255, 255, 0.6);
+}
+
+.form-control,
+.form-select,
+textarea,
+select,
+input {
+    border-radius: 14px !important;
+    border: 1px solid rgba(107, 120, 144, 0.25) !important;
+    padding: 0.78rem 0.95rem !important;
+}
+
+.form-control:focus,
+.form-select:focus,
+textarea:focus,
+select:focus,
+input:focus {
+    border-color: rgba(36, 87, 255, 0.6) !important;
+    box-shadow: 0 0 0 0.25rem rgba(36, 87, 255, 0.12) !important;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 460px;
+    animation: rise-in 0.45s ease both;
+}
+
+.auth-header {
+    padding: 2rem;
+    color: white;
+    background: linear-gradient(135deg, var(--dark), var(--primary));
+    text-align: center;
+}
+
+.auth-header h3 {
+    margin: 0;
+    font-weight: 900;
+    letter-spacing: -0.04em;
+}
+
+.table-list-item,
+.list-group-item {
+    border-color: rgba(107, 120, 144, 0.13) !important;
+    padding: 1rem 1.25rem;
+}
+
+.chart-card canvas {
+    max-height: 330px;
+}
+
+@keyframes rise-in {
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.danger-zone {
+    border-color: rgba(239, 71, 111, 0.25) !important;
+}
+
+@media (max-width: 768px) {
+    .page-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .page-shell {
+        padding-top: 92px;
+    }
+
+    .filter-form {
+        flex-direction: column;
+    }
+
+    .filter-form .form-select {
+        width: 100% !important;
+    }
+}
