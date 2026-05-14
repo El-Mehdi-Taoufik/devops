@@ -6,7 +6,7 @@ Mini-projet DevOps basé sur une application de gestion bancaire avec login, cli
 
 ## Auteur
 
-El-Mehdi Taoufik et Bilal Chbanat
+El-Mehdi Taoufik | Bilal Chbanat |Mohamed Reda Bouchaiba
 
 ## DevOps
 
